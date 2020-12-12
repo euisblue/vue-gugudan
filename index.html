@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <title>Gugudan</title>
+</head>
+
+<body>
+    <div id="root">
+        <div id="question">
+            {{first}} times {{second}} is?
+        </div>
+        <form id="answerForm" v-on:submit="onSubmitForm">
+            <input type="number" ref="answer" v-model="value" id="your-answer" autofocus>
+            <button id="check-btn">Check</button>
+        </form>
+        <div id="result">
+            {{result}}
+        </div>
+    </div>
+</body>
+
+<script>
+    const App = new Vue({
+        el: '#root',
+        data: {
+            first: Math.ceil(Math.random() * 9),
+            second: Math.ceil(Math.random() * 9),
+            value: '',
+            result: '',
+        },
+        methods: {
+            onSubmitForm(e) {
+                e.preventDefault();
+
+                const [a, b, c] = [parseInt(this.first), parseInt(this.second), parseInt(this.value)];
+
+                if(a * b === c) {
+                    this.result = "Correct!";
+                    this.first = Math.ceil(Math.random() * 9);
+                    this.second = Math.ceil(Math.random() * 9);
+                } else {
+                    this.result = "Wrong!";
+                }
+                
+                this.value = "";
+                this.$refs.answer.focus();
+            }
+        }
+    });
+</script>
+
+</html>
