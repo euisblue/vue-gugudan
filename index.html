@@ -12,15 +12,37 @@
 <body>
     <div id="root">
         <div id="question">
-            {{first}} times {{second}} is?
+            <div class="number-box">{{first[0]}}</div>
+            <div class="operation-box"> 곱하기 </div>
+            <div class="number-box">{{second[0]}}</div>
         </div>
-        <form id="answerForm" v-on:submit="onSubmitForm">
-            <input type="number" ref="answer" v-model="value" id="your-answer" autofocus>
-            <button id="check-btn">Check</button>
+        <form id="answer-form" v-on:submit="onSubmitForm">
+            <div class="right-or-wrong">
+                <div v-if="correct" class="circle-wrapper">
+                    <div class="success circle"></div>
+                </div>
+                <div v-else-if="correct===false" class="circle-wrapper">
+                    <div class="error circle"></div>
+                </div>
+                <div v-else class="circle-wrapper">
+                    <div class="neutral circle"></div>
+                </div>
+
+            </div>
+            <input ref="answer" v-model="value" id="your-answer" autofocus>
+            <div class="right-or-wrong">
+                <div v-if="correct" class="circle-wrapper">
+                    <div class="success circle"></div>
+                </div>
+                <div v-else-if="correct===false" class="circle-wrapper">
+                    <div class="error circle"></div>
+                </div>
+                <div v-else class="circle-wrapper">
+                    <div class="neutral circle"></div>
+                </div>
+
+            </div>
         </form>
-        <div id="result">
-            {{result}}
-        </div>
     </div>
 </body>
 
@@ -28,25 +50,50 @@
     const App = new Vue({
         el: '#root',
         data: {
-            first: Math.ceil(Math.random() * 9),
-            second: Math.ceil(Math.random() * 9),
+            first: ['일', 1],
+            second: ['일', 1],
             value: '',
-            result: '',
+            result: '일',
+            numberKorean: ['0', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구'],
+            correct: ''
         },
         methods: {
+            generateNumber() {
+                const a = Math.ceil(Math.random() * 9);
+                const b = Math.ceil(Math.random() * 9);
+                return [[this.numberKorean[a], a], [this.numberKorean[b], b]];
+            },
             onSubmitForm(e) {
                 e.preventDefault();
 
-                const [a, b, c] = [parseInt(this.first), parseInt(this.second), parseInt(this.value)];
+                if (this.value === this.result) {
+                    this.correct = true;
+                    [this.first, this.second] = this.generateNumber();
 
-                if(a * b === c) {
-                    this.result = "Correct!";
-                    this.first = Math.ceil(Math.random() * 9);
-                    this.second = Math.ceil(Math.random() * 9);
+                    const answerBtn = document.getElementById('your-answer');
+                    let num = (parseInt(this.first[1]) * parseInt(this.second[1])).toString();
+                    let c = '';
+
+                    if (num.length > 1) {
+                        if (num[0] === '1') {
+                            if (num[1] === '0')
+                                c = '십';
+                            else
+                                c = `십${this.numberKorean[num[1]]}`;
+                        } else if (num[1] === '0') {
+                            c = `${this.numberKorean[num[0]]}십`;
+                        } else {
+                            c = `${this.numberKorean[num[0]]}십${this.numberKorean[num[1]]}`;
+                        }
+                    } else {
+                        c = `${this.numberKorean[num[0]]}`;
+                    }
+                    this.result = c;
                 } else {
-                    this.result = "Wrong!";
+                    this.correct = false;
+                    const answerBtn = document.getElementById('your-answer');
                 }
-                
+
                 this.value = "";
                 this.$refs.answer.focus();
             }
